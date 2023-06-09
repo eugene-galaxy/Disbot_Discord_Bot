@@ -2,7 +2,8 @@ import { Client, GatewayIntentBits } from "discord.js";
 import axios from "axios";
 import { API_GET_SCANNER_DATA, BASE_URL } from "./config/endpoint.js";
 import { filterParam } from "./config/filter.js";
-
+import dotenv from "dotenv";
+dotenv.config();
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -20,12 +21,13 @@ client.once("ready", () => {
     fetchDataAndSendMessage();
   }, 60000); // Interval in milliseconds (e.g., 60000 ms = 1 minute)
   console.log(`Bot is ready. Logged in as ${client.user.tag}`);
+  console.log("Please wait until loading is finished.");
 });
 
 // Command handler for the 'hello' command
 client.on("messageCreate", (message) => {
   const stockInfo = lastStockInfos.find(
-    (item) => item.Ticker === message.content
+    (item) => item.Ticker.toLowerCase() === message.content.toLowerCase()
   );
   if (stockInfo) {
     message.channel.send(
@@ -43,9 +45,7 @@ client.on("messageCreate", (message) => {
 });
 
 // Replace 'YOUR_TOKEN' with your actual bot token
-client.login(
-  "MTExNjUyOTM1OTU3NTA3Njg4NA.G9NrWM.gEQHCNE7gMcN35XljGSwRz7kLuX__BQM_OUzv8"
-);
+client.login(process.env.BotToken);
 
 async function fetchDataAndSendMessage() {
   console.log("Loading data...");
